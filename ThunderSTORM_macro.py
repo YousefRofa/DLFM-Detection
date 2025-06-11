@@ -1,9 +1,12 @@
 import fijibin
+import imagej
 import json
 import os
 import pandas as pd
 
-folder = "Z:\Yousef(yma9167)\DNA_ImgDet\dsDNA50 1 fM"
+fijibin.BIN = '/Users/yousefrofa/Documents/Programs/ImageJ.app/Contents/MacOS/ImageJ' # Specify the location of ImageJ
+fijibin.FIJI_VERSION = '20141125'
+folder = "shibeitadata/Yousef(yma9167)/DNA_ImgDet/dsDNA50 1 fM"
 sigma = 1.6  # Default value recommended by library doc is 1.6
 
 tif_files = []
