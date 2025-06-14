@@ -1,4 +1,3 @@
-import scipy
 import cv2
 from numpy.fft import fft2, fftshift, ifftshift
 from mpl_toolkits.axes_grid1 import make_axes_locatable
