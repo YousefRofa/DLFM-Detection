@@ -10,3 +10,9 @@ in your environment variables.
 It will require initializing imageJ with fiji to be able to use plugins.
 
 Make sure you reference the fiji app and not imagej.exe
+
+We will have to also refer to the plugin ThunderSTORM using maven instead of regular installation https://maven.scijava.org/#nexus-search;classname~Thunderstorm. More on this process here: https://forum.image.sc/t/installing-imagej-plugins-with-python/68368/2
+
+You can include weather you would like to save the protocol alongside each image analysis or not
+
+User can specify the file extension

@@ -1,6 +1,7 @@
 import math
 import numpy as np
-
+import cv2
+import matplotlib.pyplot as plt
 
 def lg_filter(sd=1.6):
     total = 0
@@ -15,5 +16,9 @@ def lg_filter(sd=1.6):
     lg_filter = g_filter - b
     return lg_filter
 
+image = cv2.imread("output.tif")
+filtered = cv2.filter2D(image, -1, lg_filter())
 
-lg_filter()
+plt.imshow(filtered)
+plt.show()
+# print(lg_filter())
