@@ -4,6 +4,7 @@ import json
 import os
 import pandas as pd
 
+
 fijibin.BIN = '/Users/yousefrofa/Documents/Programs/ImageJ.app/Contents/MacOS/ImageJ' # Specify the location of ImageJ
 fijibin.FIJI_VERSION = '20141125'
 folder = "shibeitadata/Yousef(yma9167)/DNA_ImgDet/dsDNA50 1 fM"
