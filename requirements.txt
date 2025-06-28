@@ -1,0 +1,6 @@
+numpy==2.3.0
+matplotlib
+opencv-python==4.11.0.86
+pandas
+fijibin
+pyimagej
