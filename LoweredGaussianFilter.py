@@ -6,7 +6,8 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-max_size = 40 # needs calibartion
+max_size = 100 # needs calibartion
+radius = 3.5
 
 def lg_filter(sd=1.6):
     total = 0
@@ -22,18 +23,19 @@ def lg_filter(sd=1.6):
     return lg_filter
 
 
-def find_spots(image, title):
+def find_spots(image, image_unit16depth,  title):
     # plt.figure(figsize=(10, 5))
 
     # fig, ax = plt.subplots()
 
-    # inverted = cv2.bitwise_not(image)
+    inverted = cv2.bitwise_not(image)
     grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    marked_image = image
 
     # plt.imshow(grayscale, cmap='gray')
     # plt.imshow(covid_probe, cmap='gray')
 
-    # plt.title(title)
+    plt.title(title)
 
     mean_val = np.mean(grayscale)
     std_val = np.std(grayscale)
@@ -66,49 +68,80 @@ def find_spots(image, title):
         # cv2.rectangle(inverted, (x, y), (x + w, y + h), (0, 255, 0), 1)  # Bounding box (green)
         rect = patches.Rectangle((x, y), w, h, edgecolor='g', facecolor='none')
         # ax.add_patch(rect)
-        if area <= max_size:
-            # plt.scatter(cx, cy, 5, c="r")
-            ## FOR SCATERING
-            spots_coordinates.append([cx, cy])
+        if radius < int(cx) < 512-radius and radius < int(cy) < 512-radius:
+            if  area <= max_size:
+                intensity=0
+                for i in range(-int(radius), int(radius)+1):
+                    for j in range(-int(radius), int(radius)+1):
+                        if i*i + j*j <= radius*radius:
+                            marked_image[int(cx+i)][int(cy+j)] = [0, 255, 0]
+                            intensity += image_unit16depth[int(cx+i)][int(cy+j)]
+                ## FOR SCATERING
+                # plt.imshow(marked_image)
+                spots_coordinates.append([cx, cy, area, intensity])
 
-    print(spots_coordinates)
+    # print(spots_coordinates)
     return spots_coordinates
 
-
 max_probe_intensity = 0
+probe_intensities = []
 
 for file in os.listdir("Probe"):
     if file.endswith(".tif"):
         image = cv2.imread("Probe/"+file)
+        image_unit16depth = cv2.imread("Probe/"+file, cv2.IMREAD_ANYDEPTH)
         grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         filtered = cv2.filter2D(image, -1, lg_filter())
-        coordinates = find_spots(filtered, "Lowered Gaussian")
-        for coordinate in coordinates:
-            intensity = grayscale[int(coordinate[0])][int(coordinate[1])]
-            # print(str(int(coordinate[0]))+","+str(int(coordinate[1])))
+        data = find_spots(filtered, image_unit16depth, "Lowered Gaussian")
+        print(file)
+        for single_spot in data:
+            intensity = single_spot[3]
+            grayscale_intensity = grayscale[int(single_spot[1])][int(single_spot[0])]
+            # coordinates area accessed as y, x. Pasas these to the gray scale iamge to get
+            # that pixel value
+            probe_intensities.append(intensity)
             # print(intensity)
-            if intensity > max_probe_intensity:
+            # print(coordinate)
+            if  intensity > max_probe_intensity:
                 max_probe_intensity = intensity
-print(max_probe_intensity)
+                cv2.imwrite("unit16.tif", image_unit16depth)
+                print(file)
+                print(int(single_spot[0]), int(single_spot[1]), int(single_spot[2]))
+                print(max_probe_intensity, end='\n\n')
+
+plt.title("Probe Intensities")
+plt.hist(probe_intensities, int(len(probe_intensities)/10))
+plt.show()
 
 values = []
+sample_intensities = []
+count = 0
+
 for file in os.listdir("Sample"):
     if file.endswith(".tif"):
         image = cv2.imread("Sample/"+file)
+        image_unit16depth = cv2.imread("Sample/"+file, cv2.IMREAD_ANYDEPTH)
         grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         filtered = cv2.filter2D(image, -1, lg_filter())
-        coordinates = find_spots(filtered, "Lowered Gaussian")
-        for coordinate in coordinates:
-            intensity = grayscale[int(coordinate[0])][int(coordinate[1])]
+        data = find_spots(filtered, image_unit16depth, "Lowered Gaussian")
+        for single_spot in data:
+            intensity = single_spot[3]
+            grayscale_intensity = grayscale[int(single_spot[1])][int(single_spot[0])]
             # print(str(int(coordinate[0]))+","+str(int(coordinate[1])))
-            # print(intensity)
+            sample_intensities.append(intensity)
             if intensity > max_probe_intensity:
-                print(intensity)
-
+                count+=1
                 values.append(intensity/max_probe_intensity)
 
+
+print("count is ", count)
 # for i in find_spots(filtered, "Lowered Gaussian"):  # Skip background (label 0)
 #     plt.scatter(i[0], i[1], 5, c="r")
+plt.title("Sample Intensities")
+plt.hist(sample_intensities, int(len(sample_intensities)/10))
+plt.show()
+
+plt.title("Ratio")
 plt.hist(values)
 plt.show()
 
