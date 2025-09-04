@@ -28,7 +28,7 @@ def convert_nd2_to_tiff(multi_page: bool = True):
         output_dir: Directory where .tiff files will be saved.
         multi_page: If True, writes a single multi-page TIFF; otherwise, writes individual TIFF per frame.
     """
-    input_path = "/Volumes/shubeitadata/Anand(akd6)/Data for software analysis/Short DNA samples/1 aM short DNA 50 mer/samples incubated at high conc and then diluted/1_aM experiment 1/ssDNA 50"
+    input_path = "/Volumes/shubeitadata/Anand(akd6)/Data for software analysis/SARS_CoV_2 samples/1 fM/Experiment_set_1/1 fM covid probe 1 inc at low conc 2hrs/probe 1"
     output_dir = "/Users/yousefrofa/Documents/Code/DLFM_Detection/Probe"
     for file in os.listdir(input_path):
         if file.endswith(".nd2"):
@@ -58,8 +58,8 @@ def main():
     )
     args = parser.parse_args()
 
-    input_path = "/Volumes/shubeitadata/Anand(akd6)/Data for software analysis/Short DNA samples/1 aM short DNA 50 mer/samples incubated at high conc and then diluted/1_aM experiment 1/dsDNA50"
-    output_dir = "/Users/yousefrofa/Documents/Code/DLFM_Detection/Sample"
+    input_path = "/Volumes/shubeitadata/Anand(akd6)/Data for software analysis/SARS_CoV_2 samples/1 fM/Experiment_set_1/1 fM covid probe 1 inc at low conc 2hrs/probe 1"
+    output_dir = "/Users/yousefrofa/Documents/Code/DLFM_Detection/Probe"
     multi_page = not args.single
 
     # If input is a directory, process all .nd2 files within
